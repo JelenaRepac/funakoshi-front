@@ -1,0 +1,18 @@
+.document-wrapper{
+    display: grid !important;
+    justify-content: center;
+    margin-left: 250px;
+}
+.page {
+    background-color: tomato;
+  }
+  
+  .section {
+    color: white;
+    text-align: center;
+    margin: 30px;
+  }
+  .document-wrapper .react-pdf__Page__textContent {
+    color: transparent;
+  }
+  

@@ -1,0 +1,56 @@
+.navbar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 50px;
+    background-color: #000000;
+    color: #fff;
+    transition: width 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .navbar.expanded {
+    width: 200px;
+  }
+
+  .navbar ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+  }
+  
+  .navbar li {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .navbar li:hover {
+    background-color: #555;
+  }
+  
+  .content {
+    margin-left: 200px; 
+    padding: 20px;
+  }
+  
+  .link{
+    text-decoration: none;
+    color: aliceblue;
+  }
+
+  .image{
+    width: 180px;
+  }
+  .image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .logout-container {
+    position: absolute;
+    bottom: 0;
+    width: 100%; 
+  }

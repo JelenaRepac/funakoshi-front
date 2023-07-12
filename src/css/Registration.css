@@ -1,0 +1,87 @@
+.registration-body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.popcorn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.registration-wrapper {
+  width: 300px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 32px;
+  margin-bottom: 30px;
+  color: #007bff;
+}
+
+label {
+  display: block;
+  margin-bottom: 20px;
+  text-align: left;
+  font-size: 16px;
+  color: #555;
+}
+
+input {
+  width: 90%;
+  padding: 10px;
+  border-radius: 4px;
+  border: none;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  transition: border-color 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+input:invalid {
+    border-color: #c55454;
+}
+  
+button.button-28 {
+  width: 100%;
+  padding: 12px;
+  margin-top: 30px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button.button-28:hover {
+  background-color: #0056b3;
+}
+
+.register-p {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #777;
+}
+
+p a {
+  color: #007bff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+p a:hover {
+  color: #0056b3;
+}
