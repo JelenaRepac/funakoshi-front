@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CompetitionService from '../../services/CompetitionService';
 
+
 export default function AddCompetitionForm(props){
     const cities= props.cities;
 
@@ -33,11 +34,13 @@ export default function AddCompetitionForm(props){
   
     const handleSave = async (e) => {
         e.preventDefault(); 
+        console.log(competition);
         const response = await CompetitionService.saveCompetitionAsync(competition);
         props.setSavedCompetition(competition);
         console.log(response);
     };
   
+      
     return (
       <form onSubmit={handleSave} className='form-member'>
          <label className="form-label">
@@ -52,6 +55,7 @@ export default function AddCompetitionForm(props){
           Date:
           <input type="date" name="date" value={competition.date} onChange={handleInputChange} className="form-input" />
         </label>
+        <label>City:</label>
         <select name="city" value={competition.city.id} onChange={handleInputChange} className="form-select">
             <option value="">Select a city</option>
             {cities.map((city) => (
@@ -60,8 +64,6 @@ export default function AddCompetitionForm(props){
                 </option>
             ))}
         </select>
-
-       
         <button type="submit" className="form-button">Save competition</button>
       </form>
     );

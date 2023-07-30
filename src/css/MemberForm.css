@@ -1,7 +1,7 @@
 .member-form {
     display: flex;
     flex-direction: column;
-   width: 40px;
+    width: 40px;
     margin: 0 auto;
   }
   .form-member{

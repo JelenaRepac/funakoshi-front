@@ -15,6 +15,7 @@ export default class CityService {
         };
         const response = await fetch(CITY_GET_ALL_API, requestOptions);
         const responseJson = await response.json();
+        console.log(responseJson);
           const cities = responseJson.responseData.map((responseData) => {
             return new CityDefinition(
               responseData.id,

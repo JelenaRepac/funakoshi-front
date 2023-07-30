@@ -92,9 +92,10 @@ export default function Register() {
               required
             />
           </label>
+          <Link  to={"/"}>
           <button onClick={registerAsync} className="button-28">
             Register
-          </button>
+          </button></Link>
           <p className="register-p">Already have an account?</p>
           <p> <Link to={'/login'} style={linkStyle}>Click here to login!</Link></p>
         </div>

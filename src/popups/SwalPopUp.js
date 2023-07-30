@@ -144,10 +144,32 @@ export async function deleteMemberQuestionPopUpAsync() {
   return shouldLogout;
 }
 
+export async function deleteCompetitionQuestionPopUpAsync() {
+  const { value: shouldLogout } = await Swal.fire({
+     ...swalOptions,
+     title: "Are you sure you want to delete competition?",
+     text: "You wont be able to revart this!",
+     icon: "warning",
+     showCancelButton: true,
+     confirmButtonText: "Yes, delete",
+     cancelButtonText: "Cancel",
+   });
+   return shouldLogout;
+ }
+ 
 export function deletedMemberSuccessfullyPopUp(member) {
   return swalWithBootstrapButtons.fire(
     "Deleted!",
     `${member.firstname} has been deleted.`,
     "success"
   );
+}
+
+
+export function addedMemberSuccessfullyPopUp() {
+  return Swal.fire({
+    ...swalOptions,
+    icon: "success",
+    title: `You successfully added new member to the team!`,
+  });
 }

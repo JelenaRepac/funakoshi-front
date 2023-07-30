@@ -11,6 +11,7 @@ import {
 } from "../src/popups/SwalPopUp";
 import MembershipFees from "./components/MembershipFees";
 import Competition from "./components/Competitions";
+import CompetitionEntry from "./components/CompetitionEntry";
 
 function App() {
 
@@ -41,6 +42,7 @@ function App() {
           <Route path="/trainers" element={<Trainers   />} />
           <Route path="/membershipFees" element={<MembershipFees />} />
           <Route path="/competitions" element={<Competition />} />
+          <Route path="/competitionEntries" element ={<CompetitionEntry/>} />
           <Route path="/*" element={<Navigate to="/registration" />} />
         </Routes>
       </BrowserRouter> 

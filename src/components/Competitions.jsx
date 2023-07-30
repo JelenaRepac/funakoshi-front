@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import CompetitionService from "../services/CompetitionService";
 import "../css/Competition.css";
 import CityService from "../services/CityService";
@@ -7,32 +8,53 @@ import AddCompetitionForm from "./forms/AddCompetitionForm";
 import ResultMemberService from "../services/ResultMemberService";
 import ResultsForm from "./forms/ResultsForm";
 import MemberService from "../services/MemberService";
+import EditCompetitionForm from "./forms/EditCompetitionForm";
+import {
+  deleteCompetitionQuestionPopUpAsync,
+  errorOccurredPopUp
+} from "../popups/SwalPopUp";
 
+// const FILE_API ="http://localhost:5165/api/file/upload";
 export default function Competitions() {
   const [upcomingCompetitions, setUpcomingCompetitions] = useState([]);
   const [pastCompetitions, setPastCompetitions] = useState([]);
   const [cities, setCities] = useState([]);
   const [isCompetitionFormOpened, setCompetitionFormOpened] = useState(false);
+  const [isCompetitionEditFormOpened, setCompetitionEditFormOpened] = useState(false);
   const [savedCompetition, setSavedCompetition] = useState();
   const [isResultFormOpened,setResultFormOpened] = useState(false);
   const [competitionResults, setCompetitionResults]=useState([]);
+  const [competitionForEditing, setCompetitionForEditing] = useState();
+  const [editedCompetition,setCompetitionEdited] = useState();
+  const [deletedCompetition,setCompetitionDeleted] = useState();
+
+  const navigate = useNavigate();
 
   const handleResultsClick = (competition) => {
     openResultsForm(competition);
   };
+
+  const fetchMemberData = async (results) => {
+    const resultsWithMemberData = [];
+    for (const result of results) {
+      const memberResponse = await MemberService.fetchMemberDataForCompetitorId(result.competitorDefinition.id);
+      resultsWithMemberData.push({
+        ...result,
+        member: memberResponse,
+      });
+    }
+    return resultsWithMemberData;
+  };
   const openResultsForm = async (competition) =>{
     const results = await ResultMemberService.getAllResultsMemberForCompetitionAsync(competition.id);
     console.log(results);
-    const memberDataPromises = results.map(async (result) => {
-      const memberResponse = await MemberService.fetchMemberDataForCompetitorId(result.competitorDefinition.id);
-      return {
-        ...result,
-        member: memberResponse,
-      };
+    fetchMemberData(results)
+    .then((resultsWithMemberData) => {
+      setCompetitionResults(resultsWithMemberData);
+    })
+    .catch((error) => {
+      console.error(error);
     });
-    const resultsWithMemberData = await Promise.all(memberDataPromises);
-    console.log(resultsWithMemberData);
-    setCompetitionResults(resultsWithMemberData);
     setResultFormOpened(true);
   }
   const closeResultForm =() =>{
@@ -41,10 +63,19 @@ export default function Competitions() {
   const openCompetitionForm = () => {
     setCompetitionFormOpened(true);
   };
+  const openCompetitionEditForm = (competition) => {
+    setCompetitionForEditing(competition);
+    setCompetitionEditFormOpened(true);
+    
+  };
 
   const closeCompetitionForm = () => {
     setCompetitionFormOpened(false);
   };
+
+  const closeCompetitionEditForm = () =>{
+    setCompetitionEditFormOpened(false);
+  }
   const getAllCompetitions = async () => {
     const competitions = await CompetitionService.getAllCompetitionAsync();
     const currentDate = new Date();
@@ -62,9 +93,17 @@ export default function Competitions() {
 
   const getAllCities = async () =>{
     const dbCities = await CityService.getAllCitiesAsync();
+    console.log(dbCities);
     if(dbCities !== null){
       setCities(dbCities);
     }
+  }
+
+  const handleOpenCompetitionEntries = (competition) => {
+    console.log(competition);
+    navigate('/competitionEntries', {
+          state: { competition: competition },
+        });
   }
 
   useEffect(() => {
@@ -73,21 +112,70 @@ export default function Competitions() {
         await getAllCities();
         await getAllCompetitions();
       } catch (error) {
+        errorOccurredPopUp('Error while trying to fetch data from database!');
         console.error('Error fetching data:', error);
       }
     };
   
     fetchData();
-      
   },[]);
+
+
   useEffect(() => {
-    if (savedCompetition )  {
+    if (editedCompetition || deletedCompetition || savedCompetition)  {
       getAllCompetitions();
     }
-  }, [savedCompetition]);
+  }, [editedCompetition, deletedCompetition,savedCompetition]);
+  
+  const deleteCompetition = async(competition) => {
+    const shouldDelete = await deleteCompetitionQuestionPopUpAsync();
+    if(shouldDelete){
+      const response = await CompetitionService.deleteCompetitionAsync(competition.id);
+      console.log(response);
+      setCompetitionDeleted(competition);
+    }
+    
+  }
 
+  // const [selectedFile, setSelectedFile] = useState(null);
+
+  // const handleFileChange = (event) => {
+  //   setSelectedFile(event.target.files[0]);
+  // };
+
+  // const handleFormSubmit = async (event) => {
+  //   event.preventDefault();
+
+  //   if (selectedFile) {
+  //     const formData = new FormData();
+  //     formData.append('file', selectedFile);
+
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       const requestOptions = {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: `${token}`,
+  //         },
+  //         body: formData
+  //       }
+        
+  //     const response = await fetch(FILE_API, requestOptions);
+      
+  //       console.log('File uploaded successfully!');
+  //     } catch (error) {
+  //       console.error('Error uploading file:', error);
+  //     }
+  //   }
+  // };
   return (
+    
     <div className="competition-wrapper">
+      {/* <form onSubmit={handleFormSubmit} enctype="multipart/form-data">
+      <input type="file" onChange={handleFileChange} />
+      <button type="submit">Upload</button>
+    </form> */}
+  
       <h2 className="competition-title upcoming-title">Upcoming Competitions</h2>
       <table className="table">
         <thead>
@@ -97,16 +185,22 @@ export default function Competitions() {
             <th>Date</th>
             <th>Competition Hall</th>
             <th>City</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           {upcomingCompetitions.map((competition, index) => (
             <tr key={index}>
               <td>{index + 1}</td>
-              <td>{competition.name}</td>
+              <td className="competition-name" onClick={() => handleOpenCompetitionEntries(competition)}>
+                {competition.name}
+              </td>
               <td>{competition.date}</td>
               <td>{competition.competitionHall}</td>
               <td>{competition.cityDefinition.name}</td>
+              <td><button onClick={() =>openCompetitionEditForm(competition)} className="button">Edit</button></td>
+              <td><button onClick={() =>deleteCompetition(competition)} className="button">Delete competition</button></td>
             </tr>
           ))}
         </tbody>
@@ -121,7 +215,6 @@ export default function Competitions() {
             <th>Date</th>
             <th>Competition Hall</th>
             <th>City</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -134,7 +227,6 @@ export default function Competitions() {
               <td>{competition.date}</td>
               <td>{competition.competitionHall}</td>
               <td>{competition.cityDefinition.name}</td>
-              <td><button className="button-results">Results</button></td>
             </tr>
           ))}
         </tbody>
@@ -149,6 +241,20 @@ export default function Competitions() {
          <AddCompetitionForm 
          cities={cities}
          setSavedCompetition= {setSavedCompetition}
+         />
+       </div>
+     </div>
+      }
+      {isCompetitionEditFormOpened &&
+       <div className="popup-container-competition">
+       <div className="popup-content-competition">
+         <button className="close-button" onClick={closeCompetitionEditForm}>
+           X
+         </button>
+         <EditCompetitionForm 
+         cities={cities}
+         competition = {competitionForEditing}
+         setCompetitionEdited = {setCompetitionEdited}
          />
        </div>
      </div>

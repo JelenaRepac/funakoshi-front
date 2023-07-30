@@ -1,5 +1,5 @@
 export default class CompetitorDefinition {
-    constructor(id,category, discipline, medals, goldMedals, silverMedals, bronzeMedals,classCategory ) {
+    constructor(id,category, discipline, medals, goldMedals, silverMedals, bronzeMedals,classCategory,team ) {
       this.id= id;
       this.category = category;
       this.discipline = discipline;
@@ -8,6 +8,7 @@ export default class CompetitorDefinition {
       this.silverMedals = silverMedals;
       this.bronzeMedals = bronzeMedals;
       this.classCategory = classCategory;
+      this.team = team;
     }
   }
   

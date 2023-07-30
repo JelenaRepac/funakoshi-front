@@ -18,7 +18,7 @@ const EditMemberForm = (props) => {
   );
   const [belt, setBelt] = useState(member.belt);
   const [gender, setGender] = useState(member.gender);
-  const [selectedCity, setSelectedCity] = useState(member.cityDefinition.name);
+  const [selectedCity, setSelectedCity] = useState(member.cityDefinition);
 
   const handleCityChange = (e) => {
     const selectedCityId = parseInt(e.target.value);
@@ -98,13 +98,13 @@ const EditMemberForm = (props) => {
           onChange={(e) => setFathersName(e.target.value)}
         />
       </label>
+      <label>Select a city</label>
       <select
         name="city"
         value={selectedCity ? selectedCity.id : ""}
         onChange={handleCityChange}
         className="form-select"
       >
-        <option value="">Select a city</option>
         {cities.map((city) => (
           <option key={city.id} value={city.id}>
             {city.name}

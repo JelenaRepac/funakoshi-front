@@ -1,7 +1,7 @@
 import CityDefinition from "../model/CityDefinition";
 import CompetitionDefinition from "../model/CompetitionDefinition";
 const COMPETITION_GET_ALL_API="http://localhost:5165/api/competition";
-const COMPETITION_API ="http://localhost:5165/api/competition";
+const COMPETITION_API ="http://localhost:5165/api/competition/";
 
 export default class CompetitionService {
     
@@ -64,6 +64,27 @@ export default class CompetitionService {
           "city": competition.city
       })
       };
+      const response = await fetch(COMPETITION_API, requestOptions);
+      const responseJson = await response.json();
+      return responseJson;
+    }
+
+    static async updateCompetitionAsync(competition){
+      const token = localStorage.getItem("token");
+      const requestOptions = {
+        method: "PUT",
+        headers: {
+          "Content-Type":"application/json",
+          Authorization: `${token}`,
+        },
+        body: JSON.stringify({
+          "id": competition.id,
+          "name":competition.name,
+          "competitionHall": competition.competitionHall,
+          "date": competition.date,
+          "city": competition.cityDefinition
+      })
+      }
       const response = await fetch(COMPETITION_API, requestOptions);
       const responseJson = await response.json();
       return responseJson;

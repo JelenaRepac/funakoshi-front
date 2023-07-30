@@ -8,7 +8,7 @@ export default function Members(props) {
       props.setMembershipFees(member.membershipFeesDefinition);
     }
     else{
-    props.setSelectedMember(member);
+        props.setSelectedMember(member);
     }
   };
     return (
@@ -42,8 +42,8 @@ export default function Members(props) {
                 
               >
                 <td>{index+1}</td>
-                <td  style={{ cursor: "pointer" }} onClick={() => handleMemberClick(member)}>{member.firstname}</td>
-                <td>{member.lastname}</td>
+                <td  style={{ cursor: "pointer" }} onClick={() => handleMemberClick(member)}><b>{member.firstname}</b></td>
+                <td><b>{member.lastname}</b></td>
                 <td>{member.birthday}</td>
                 <td>{member.mothersName}</td>
                 <td>{member.fathersName}</td>
@@ -54,7 +54,7 @@ export default function Members(props) {
                {!props.isFees && 
                <>
                <td><button onClick={() =>props.openEditMemberForm(member)} className="button"> Edit</button></td>
-               <td><button onClick={()=>props.deleteMember(member)} style={{width:"100px"}} className="button">Delete member</button></td>
+               <td><button onClick={()=>props.deleteMember(member)}  className="button">Delete member</button></td>
                </>
                }
                 </tr>

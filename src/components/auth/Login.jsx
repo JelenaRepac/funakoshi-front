@@ -3,6 +3,10 @@ import "../../../src/css/Login.css";
 import { Link } from "react-router-dom";
 import UserService from "../../services/UserService";
 import { useNavigate } from "react-router-dom";
+
+import {
+  errorOccurredPopUp,
+} from "../../popups/SwalPopUp";
 export default function Login(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -10,7 +14,9 @@ export default function Login(props) {
   const onLogin = props.onLogin;
 
   const loginAsync = async function () {
+    try{
     const responseJson = await UserService.loginAsync({ username, password });
+    
     if(responseJson!=null){
       console.log(responseJson);
       const loggedUser= responseJson.userDetails.username;
@@ -19,8 +25,11 @@ export default function Login(props) {
         navigate("/");
       }
     }
-    
-    
+   
+  }catch(error){
+    errorOccurredPopUp('Check if the server is running!');
+    console.log(`Error: ${error}`);
+  }
   };
 
   const linkStyle = {

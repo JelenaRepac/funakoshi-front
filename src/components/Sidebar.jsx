@@ -28,9 +28,10 @@ export default function Sidebar(props) {
         <ul>
         <Link className="link" to={"/"}><li>Home</li></Link>
         <Link className='link' to={"/membershipFees"}><li>Membership fee</li></Link>
-        <Link className="link" to={"/trainers"}> <li> Trainers</li></Link>
         <Link className="link" to={"/competitions"}> <li> Competitions</li></Link>
+        {/* <Link className="link" to={"/competitionEntries"}> <li> Competitors</li></Link> */}
         <Link className="link" to={"/results"}><li>Results</li></Link>
+        <Link className="link" to={"/trainers"}> <li> Trainers</li></Link>
         <div className="logout-container">
           <li  onClick={onLogout}>Logout</li>
         </div>
