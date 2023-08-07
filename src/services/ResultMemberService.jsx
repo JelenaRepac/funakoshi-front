@@ -3,6 +3,7 @@ import CompetitionDefinition from "../model/CompetitionDefinition";
 import CompetitorDefinition from "../model/CompetitorDefinition";
 import ResultMemberDefinition from "../model/ResultMemberDefinition";
 const RESULT_MEMBER_GET_ALL = "http://localhost:5165/api/memberResult";
+const RESULT_MEMBER="http://localhost:5165/api/memberResult";
 const RESULT_MEMBER_GET_ALL_BY_COMPETITION="http://localhost:5165/api/memberResult/competition/id/";
 export default class ResultMemberService {
 
@@ -89,5 +90,26 @@ export default class ResultMemberService {
         });
         console.log(results);
         return results;
-  }
+    }
+
+    static async saveResultMember(result){
+      const token = localStorage.getItem("token");
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type":"application/json",
+          Authorization: `${token}`,
+        },
+        body: JSON.stringify({
+          competition: result.competitionDefinition,
+          competitor: result.competitorDefinition,
+          category: result.category,
+          medal : result.medal
+      })
+      };
+      const response = await fetch(RESULT_MEMBER, requestOptions);
+      const responseJson = await response.json();
+      console.log(responseJson);
+      return responseJson;
+    }
 }

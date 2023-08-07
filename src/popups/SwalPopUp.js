@@ -164,12 +164,61 @@ export function deletedMemberSuccessfullyPopUp(member) {
     "success"
   );
 }
-
+export function deletedCompetitionSuccessfullyPopUp(competition) {
+  return Swal.fire({
+    ...swalOptions,
+    icon: "success",
+    title: `You successfully deleted `+competition.name,
+  });
+}
 
 export function addedMemberSuccessfullyPopUp() {
   return Swal.fire({
     ...swalOptions,
     icon: "success",
     title: `You successfully added new member to the team!`,
+  });
+}
+
+export function addedMembershipFeeSuccessfullyPopUp(month) {
+  return Swal.fire({
+    ...swalOptions,
+    icon: "success",
+    title: `You successfully added fee for the `+month,
+  });
+}
+export function addedComeptitionSuccessfullyPopUp() {
+  return Swal.fire({
+    ...swalOptions,
+    icon: "success",
+    title: `You successfully added competition `,
+  });
+}
+export function addedComeptitorSuccessfullyPopUp() {
+  return Swal.fire({
+    ...swalOptions,
+    icon: "success",
+    title: `You successfully added competitor info! `,
+  });
+}
+export function addedResultSuccessfullyPopUp() {
+  return Swal.fire({
+    ...swalOptions,
+    icon: "success",
+    title: `You successfully added results! `,
+  });
+}
+export function addedComeptitionEntriesSuccessfullyPopUp(competition) {
+  return Swal.fire({
+    ...swalOptions,
+    icon: "success",
+    title: `You successfully added entries for `+competition.name,
+  });
+}
+export function updatedMemberSuccessfullyPopUp() {
+  return Swal.fire({
+    ...swalOptions,
+    icon: "success",
+    title: `You successfully updated member!`,
   });
 }

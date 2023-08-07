@@ -3,14 +3,18 @@ import "../css/Home.css";
 import MemberService from "../../src/services/MemberService";
 import AddMemberForm from "./forms/AddMemberForm";
 import CityService from "../services/CityService";
-import Competitor from "./forms/CompetitorForm";
 import EditMemberForm from "./forms/EditMemberForm";
 import Members from "./Members";
 import "react-calendar/dist/Calendar.css";
-import { deleteMemberQuestionPopUpAsync } from "../popups/SwalPopUp";
-export default function Home() {
+import {
+  deleteMemberQuestionPopUpAsync,
+  errorOccurredPopUp,
+} from "../popups/SwalPopUp";
+import UserService from "../services/UserService";
+
+export default function Home(loggedUser) {
+
   const [members, setMembers] = useState([]);
-  const [selectedMember, setSelectedMember] = useState();
   const [userDeleted, setUserDeleted] = useState();
   const [editedMember, setMemberEdited] = useState();
   const [cities, setCities] = useState([]);
@@ -19,6 +23,7 @@ export default function Home() {
   const [isMemberFormOpened, setMemberFormOpen] = useState(false);
   const [isEditMemberFormOpened, setEditMemberFormOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const [selectedMember, setSelectedMember] = useState();
 
   const openMemberForm = () => {
     setMemberFormOpen(true);
@@ -28,9 +33,6 @@ export default function Home() {
     setMemberFormOpen(false);
   };
 
-  const handleMemberClick = (member) => {
-    setSelectedMember(member);
-  };
   const closeEditMemberForm = () => {
     setEditMemberFormOpen(false);
   };
@@ -67,7 +69,11 @@ export default function Home() {
     const shouldDelete = await deleteMemberQuestionPopUpAsync();
     if (shouldDelete) {
       const response = await MemberService.deleteMemberAsync(member.id);
+      
       setUserDeleted(member);
+      if (response.responseData == null) {
+        errorOccurredPopUp(response.responseMessage);
+      }
     }
   };
 
@@ -96,6 +102,7 @@ export default function Home() {
 
   return (
     <div className="members-wrapper">
+      
       <input
         type="text"
         value={searchValue}
@@ -120,7 +127,11 @@ export default function Home() {
             <button className="close-button" onClick={closeMemberForm}>
               X
             </button>
-            <AddMemberForm cities={cities} setSavedMember={setSavedMember} />
+            <AddMemberForm
+              cities={cities}
+              setSavedMember={setSavedMember}
+              setMemberFormOpen={setMemberFormOpen}
+            />
           </div>
         </div>
       )}
@@ -133,23 +144,14 @@ export default function Home() {
             <EditMemberForm
               member={memberToEdit}
               setMemberEdited={setMemberEdited}
+              setEditMemberFormOpen={setEditMemberFormOpen}
               cities={cities}
             />
           </div>
         </div>
       )}
 
-      {/* {selectedMember && selectedMember.competitorDefinition && (
-        <div className="popup-container">
-          <div className="popup-content">
-            <Competitor
-              setSelectedMember={setSelectedMember}
-              setUserDeleted={setUserDeleted}
-              member={selectedMember}
-            />
-          </div>
-        </div>
-      )} */}
+    
     </div>
   );
 }

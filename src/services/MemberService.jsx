@@ -90,6 +90,7 @@ export default class MemberService {
     };
     const response = await fetch(MEMBER_API + memberId, requestOptions);
     const responseJson = await response.json();
+    return responseJson;
   }
 
   static async saveMemberAsync(member) {

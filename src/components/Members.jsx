@@ -5,7 +5,7 @@ export default function Members(props) {
  const handleMemberClick = (member) => {
     if(props.isFees){
       props.setSelectedMember(member);
-      props.setMembershipFees(member.membershipFeesDefinition);
+     // props.setMembershipFees(member.membershipFeesDefinition);
     }
     else{
         props.setSelectedMember(member);

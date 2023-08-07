@@ -43,3 +43,10 @@
     background-color: #0056b3;
   }
   
+  .invalid {
+    border: 1px solid red;
+  }
+  .form-input.invalid {
+    border-color: red;
+  }
+  

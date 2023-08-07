@@ -4,7 +4,7 @@ import "../../services/CompetitorService";
 import CompetitorService from "../../services/CompetitorService";
 import CompetitorDefinition from "../../model/CompetitorDefinition";
 import MemberService from "../../services/MemberService";
-
+import {addedComeptitorSuccessfullyPopUp}from "../../../src/popups/SwalPopUp";
 export default function Competitor(props) {
   const [isEditable, setIsEditable] = useState(false); // State to track the editable state
   const [isEdited, setEdited] = useState(false);
@@ -105,12 +105,11 @@ export default function Competitor(props) {
       console.log(response);
       
     } else {
-      // const response = await CompetitorService.saveCompetitorAsync(competitor);
-      //  console.log(response);
       const responseMember = await MemberService.updateMemberForCompetitor(
         member,
         competitor
       );
+      addedComeptitorSuccessfullyPopUp();
       console.log(responseMember);
       
     }

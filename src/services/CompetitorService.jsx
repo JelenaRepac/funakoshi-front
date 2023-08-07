@@ -1,5 +1,8 @@
 const COMPETITOR_API = "http://localhost:5165/api/competitor/";
+
+
 export default class CompetitorService {
+  
   static async updateCompetitorAsync(competitor) {
     console.log(competitor);
     const token = localStorage.getItem("token");

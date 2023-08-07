@@ -44,7 +44,7 @@ export default class CompetitionService {
         };
         const response = await fetch(COMPETITION_API+competitionId, requestOptions);
         const responseJson = await response.json();
-        
+        console.log(responseJson);
         return responseJson;
     }
     

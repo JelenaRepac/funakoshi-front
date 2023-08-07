@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CompetitionService from '../../services/CompetitionService';
-
+import { addedComeptitionSuccessfullyPopUp } from '../../popups/SwalPopUp';
 
 export default function AddCompetitionForm(props){
     const cities= props.cities;
@@ -34,10 +34,10 @@ export default function AddCompetitionForm(props){
   
     const handleSave = async (e) => {
         e.preventDefault(); 
-        console.log(competition);
-        const response = await CompetitionService.saveCompetitionAsync(competition);
+        await CompetitionService.saveCompetitionAsync(competition);
         props.setSavedCompetition(competition);
-        console.log(response);
+        props.setCompetitionFormOpened(false);
+        addedComeptitionSuccessfullyPopUp();
     };
   
       

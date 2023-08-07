@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import MemberService from "../services/MemberService";
 import "../css/MembershipFee.css";
 import Members from "./Members";
 import "react-calendar/dist/Calendar.css";
 import MembershipFeesDefinition from "../model/MembershipFeesDefinition";
-
+import {addedMembershipFeeSuccessfullyPopUp} from "../../src/popups/SwalPopUp";
 const MembershipFees = () => {
 
   const [members, setMembers] = useState([]);
   const [selectedMember, setSelectedMember] = useState(null);
   const [membershipFeesDefinition, setMembershipFees] = useState([]);
-  const [feesForPopup, setFees] = useState([]);
   const [isOpened, setIsOpened] = useState(false);
   const [amount, setAmount] = useState(3000);
   const [selectedFeeDate, setSelectedFeeDate] = useState(
@@ -18,11 +17,11 @@ const MembershipFees = () => {
   );
   const [searchValue, setSearchValue] = useState(""); 
   const [month, setMonth] = useState("");
-  
-  
+  const popupRef = useRef(null);
+  const [feesOpened, setFeesOpened]= useState(false);
   useEffect(() => {
     fetchMembers();
-  }, [searchValue, selectedMember]);
+  }, [searchValue]);
 
   const fetchMembers = async () => {
     try {
@@ -78,8 +77,10 @@ const MembershipFees = () => {
     return new Date(startDate).toLocaleString("default", { month: "long" });
   };
 
-  const isMembershipFeePaid = (month) => {
-    return membershipFeesDefinition.some((fee) => fee.month === month);
+  const isMembershipFeePaid = (month,member) => {
+      const membershipFees= member.membershipFeesDefinition;
+     console.log(membershipFees);
+     return membershipFees.some((fee) => fee.month === month);
   };
   
 
@@ -99,7 +100,6 @@ const MembershipFees = () => {
     const selectedMonth = month;
     setMonth(selectedMonth);
   };
-  
   const saveMembershipFee = async () => {
     try {
       const membershipFee = new MembershipFeesDefinition(
@@ -124,7 +124,8 @@ const MembershipFees = () => {
        setMonth("");
    
        setIsOpened(false);
-  
+        addedMembershipFeeSuccessfullyPopUp(membershipFee.month);
+        fetchMembers();
     } catch (error) {
       console.log("Error occurred while saving membership fee:", error);
     }
@@ -139,7 +140,7 @@ const MembershipFees = () => {
 
     const unpaidMonths = months
       .slice(months.indexOf(startMonth), months.indexOf(currentMonth) + 1)
-      .filter((month) => !isMembershipFeePaid(month));
+      .filter((month) => !isMembershipFeePaid(month,member));
 
     return unpaidMonths.length * 3000;
   };
@@ -151,12 +152,14 @@ const MembershipFees = () => {
     const startIndex = months.indexOf(startMonth);
     const monthIndex = months.indexOf(month);
 
-    return monthIndex >= startIndex && !isMembershipFeePaid(month);
+    return monthIndex >= startIndex && !isMembershipFeePaid(month,selectedMember);
   };
 
   const handleSearchChange = (event) => {
     setSearchValue(event.target.value);
   };
+
+  
   return (
     <div className="members-wrapper">
        <input
@@ -173,15 +176,19 @@ const MembershipFees = () => {
       isFees={true}
     />
     {selectedMember && (
+        
       <div className="membership-details">
+         <button className="close-button-fee" onClick={()=>setSelectedMember(null)}>
+           X
+         </button>
         <div className="membership-card">
           <div className="membership-header">
             <h2>
               {selectedMember?.firstname} {selectedMember?.lastname}
             </h2>
-           
           </div>
           <div className="membership-body">
+            
             <p>Date of membership: {selectedMember.dateOfMembership}</p>
             <p>Debt: {calculateTotalDebt(selectedMember)}</p>
           </div>
@@ -210,7 +217,7 @@ const MembershipFees = () => {
                           : ""
                       }
                     >
-                      {isMembershipFeePaid(month) ? "3000 rsd" : "/"}
+                      {isMembershipFeePaid(month, selectedMember) ? "3000 rsd" : "/"}
                     </td>
                   ))}
                 </tr>
@@ -220,7 +227,7 @@ const MembershipFees = () => {
                     <td key={month}>
                       <input
                         type="checkbox"
-                        checked={isMembershipFeePaid(month)}
+                        checked={isMembershipFeePaid(month, selectedMember)}
                         onChange={handlePopUp}
                       />
                     </td>

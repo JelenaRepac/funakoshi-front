@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import "../../css/MemberForm.css";
 import MemberService from "../../services/MemberService";
-import { addedMemberSuccessfullyPopUp } from "../../popups/SwalPopUp";
+import { addedMemberSuccessfullyPopUp, errorOccurredPopUp } from "../../popups/SwalPopUp";
+
+
 export default function AddMemberForm(props) {
+
   const cities = props.cities;
 
   const [member, setMember] = useState({
@@ -19,6 +22,9 @@ export default function AddMemberForm(props) {
     totalDebt: 3000.0,
   });
 
+    
+  
+    
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -38,10 +44,27 @@ export default function AddMemberForm(props) {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    const response = await MemberService.saveMemberAsync(member);
-    props.setSavedMember(member);
-    addedMemberSuccessfullyPopUp();
-    console.log(response);
+    
+    if (
+      !member.name ||
+      !member.lastname ||
+      !member.birthday ||
+      !member.mothersName ||
+      !member.fathersName ||
+      !member.adress ||
+      !member.city.id ||
+      !member.dateOfMembership ||
+      !member.belt ||
+      !member.gender
+    ) {
+      errorOccurredPopUp("Please fill all of the fields!");
+    }
+    else{
+      await MemberService.saveMemberAsync(member);
+      props.setSavedMember(member);
+      addedMemberSuccessfullyPopUp();
+      props.setMemberFormOpen(false);
+    }
   };
 
   return (
@@ -53,7 +76,7 @@ export default function AddMemberForm(props) {
           name="name"
           value={member.name}
           onChange={handleInputChange}
-          className="form-input"
+          className={`form-input`}
         />
       </label>
       <label className="form-label">
@@ -63,7 +86,7 @@ export default function AddMemberForm(props) {
           name="lastname"
           value={member.lastname}
           onChange={handleInputChange}
-          className="form-input"
+          className={`form-input `}
         />
       </label>
       <label className="form-label">
@@ -73,7 +96,7 @@ export default function AddMemberForm(props) {
           name="birthday"
           value={member.birthday}
           onChange={handleInputChange}
-          className="form-input"
+          className={`form-input`}
         />
       </label>
       <label className="form-label">
@@ -83,7 +106,7 @@ export default function AddMemberForm(props) {
           name="mothersName"
           value={member.mothersName}
           onChange={handleInputChange}
-          className="form-input"
+          className={`form-input `}
         />
       </label>
       <label className="form-label">
@@ -93,7 +116,7 @@ export default function AddMemberForm(props) {
           name="fathersName"
           value={member.fathersName}
           onChange={handleInputChange}
-          className="form-input"
+          className={`form-input `}
         />
       </label>
       <label className="form-label">
@@ -103,15 +126,15 @@ export default function AddMemberForm(props) {
           name="adress"
           value={member.adress}
           onChange={handleInputChange}
-          className="form-input"
+          className={`form-input `}
         />
       </label>
       <select
         name="city"
         value={member.city.id || ""}
         onChange={handleInputChange}
-        className="form-select"
-      >
+        className="form-input"
+      >t
         <option value="">Select a city</option>
         {cities.map((city) => (
           <option key={city.id} value={city.id}>
@@ -127,11 +150,11 @@ export default function AddMemberForm(props) {
           name="dateOfMembership"
           value={member.dateOfMembership}
           onChange={handleInputChange}
-          className="form-input"
+          className={`form-input`}
         />
       </label>
       <select
-        className="form-select"
+        className={`form-input`}
         name="belt"
         value={member.belt}
         onChange={handleInputChange}
@@ -147,7 +170,7 @@ export default function AddMemberForm(props) {
         <option value="BLACK">BLACK</option>
       </select>
       <select
-        className="form-select"
+       className={`form-input `}
         name="gender"
         value={member.gender}
         onChange={handleInputChange}
@@ -163,7 +186,7 @@ export default function AddMemberForm(props) {
           name="totalDebt"
           value={member.totalDebt}
           onChange={handleInputChange}
-          className="form-input"
+          className={`form-input`}
         />
       </label>
       <button type="submit" className="form-button">

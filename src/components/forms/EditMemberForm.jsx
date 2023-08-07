@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import MembershipFeesDefinition from "../../model/MembershipFeesDefinition";
 import MemberService from "../../services/MemberService";
-
+import { updatedMemberSuccessfullyPopUp } from "../../popups/SwalPopUp";
 
 const EditMemberForm = (props) => {
   const member= props.member;
@@ -26,9 +25,10 @@ const EditMemberForm = (props) => {
     setSelectedCity(city);
   };
   const updateMember = async(member) =>{
-    const response = await MemberService.updateMemberAsync(member);
-    console.log(response);
+     await MemberService.updateMemberAsync(member);
+    updatedMemberSuccessfullyPopUp();
     props.setMemberEdited(member);
+    props.setEditMemberFormOpen(false);
   }
   const handleSave = () => {
     const updatedMember = {

@@ -16,6 +16,7 @@ export default function EditCompetitionForm(props) {
     setSelectedCity(city);
   };
   const handleSave = () => {
+    
     const updatedCompetition = {
       ...competition,
       name: name,
@@ -32,11 +33,11 @@ export default function EditCompetitionForm(props) {
         updatedCompetition
     );
     props.setCompetitionEdited(updatedCompetition);
-    console.log(response);
+    props.setCompetitionEditFormOpened(false);
   };
 
   return (
-    <form onSubmit={handleSave} className='form-member'>
+    <form  className='form-member'>
       <label className="form-label">
         Name:
         <input
@@ -77,7 +78,7 @@ export default function EditCompetitionForm(props) {
           </option>
         ))}
       </select>
-      <button type="submit"  className="form-button" onClick={handleSave}>Update member</button>
+      <button type="button"  className="form-button" onClick={handleSave}>Update competition</button>
     </form>
   );
 }

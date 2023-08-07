@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CompetitionService from "../services/CompetitionService";
@@ -11,33 +10,54 @@ import MemberService from "../services/MemberService";
 import EditCompetitionForm from "./forms/EditCompetitionForm";
 import {
   deleteCompetitionQuestionPopUpAsync,
-  errorOccurredPopUp
+  errorOccurredPopUp,
+  deletedCompetitionSuccessfullyPopUp,
 } from "../popups/SwalPopUp";
+import CompetitionEntryService from "../services/CompetitionEntryService";
 
-// const FILE_API ="http://localhost:5165/api/file/upload";
 export default function Competitions() {
   const [upcomingCompetitions, setUpcomingCompetitions] = useState([]);
   const [pastCompetitions, setPastCompetitions] = useState([]);
   const [cities, setCities] = useState([]);
   const [isCompetitionFormOpened, setCompetitionFormOpened] = useState(false);
-  const [isCompetitionEditFormOpened, setCompetitionEditFormOpened] = useState(false);
+  const [isCompetitionEditFormOpened, setCompetitionEditFormOpened] =
+    useState(false);
   const [savedCompetition, setSavedCompetition] = useState();
-  const [isResultFormOpened,setResultFormOpened] = useState(false);
-  const [competitionResults, setCompetitionResults]=useState([]);
+  const [isResultFormOpened, setResultFormOpened] = useState(false);
+  const [competitionResults, setCompetitionResults] = useState([]);
   const [competitionForEditing, setCompetitionForEditing] = useState();
-  const [editedCompetition,setCompetitionEdited] = useState();
-  const [deletedCompetition,setCompetitionDeleted] = useState();
-
+  const [editedCompetition, setCompetitionEdited] = useState();
+  const [deletedCompetition, setCompetitionDeleted] = useState();
   const navigate = useNavigate();
 
-  const handleResultsClick = (competition) => {
-    openResultsForm(competition);
+  const handleResultsClick = async (competition) => {
+    const results =
+    await ResultMemberService.getAllResultsMemberForCompetitionAsync(
+      competition.id
+    );
+    console.log(results);
+    if(results.length===0){
+      handleOpenCompetitionEntries(competition);
+    }
+    else{
+      console.log(results);
+      fetchMemberData(results)
+        .then((resultsWithMemberData) => {
+          setCompetitionResults(resultsWithMemberData);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      setResultFormOpened(true);
+    }
   };
 
   const fetchMemberData = async (results) => {
     const resultsWithMemberData = [];
     for (const result of results) {
-      const memberResponse = await MemberService.fetchMemberDataForCompetitorId(result.competitorDefinition.id);
+      const memberResponse = await MemberService.fetchMemberDataForCompetitorId(
+        result.competitorDefinition.id
+      );
       resultsWithMemberData.push({
         ...result,
         member: memberResponse,
@@ -45,37 +65,39 @@ export default function Competitions() {
     }
     return resultsWithMemberData;
   };
-  const openResultsForm = async (competition) =>{
-    const results = await ResultMemberService.getAllResultsMemberForCompetitionAsync(competition.id);
+  const openResultsForm = async (competition) => {
+    const results =
+      await ResultMemberService.getAllResultsMemberForCompetitionAsync(
+        competition.id
+      );
     console.log(results);
     fetchMemberData(results)
-    .then((resultsWithMemberData) => {
-      setCompetitionResults(resultsWithMemberData);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+      .then((resultsWithMemberData) => {
+        setCompetitionResults(resultsWithMemberData);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     setResultFormOpened(true);
-  }
-  const closeResultForm =() =>{
+  };
+  const closeResultForm = () => {
     setResultFormOpened(false);
-  }
+  };
   const openCompetitionForm = () => {
     setCompetitionFormOpened(true);
   };
   const openCompetitionEditForm = (competition) => {
     setCompetitionForEditing(competition);
     setCompetitionEditFormOpened(true);
-    
   };
 
   const closeCompetitionForm = () => {
     setCompetitionFormOpened(false);
   };
 
-  const closeCompetitionEditForm = () =>{
+  const closeCompetitionEditForm = () => {
     setCompetitionEditFormOpened(false);
-  }
+  };
   const getAllCompetitions = async () => {
     const competitions = await CompetitionService.getAllCompetitionAsync();
     const currentDate = new Date();
@@ -91,20 +113,69 @@ export default function Competitions() {
     setPastCompetitions(past);
   };
 
-  const getAllCities = async () =>{
+  const getAllCities = async () => {
     const dbCities = await CityService.getAllCitiesAsync();
     console.log(dbCities);
-    if(dbCities !== null){
+    if (dbCities !== null) {
       setCities(dbCities);
     }
-  }
-
-  const handleOpenCompetitionEntries = (competition) => {
-    console.log(competition);
-    navigate('/competitionEntries', {
-          state: { competition: competition },
+  };
+  const getMembersForCompetitors = async (competitorIds) => {
+    const members = [];
+    for (const id of competitorIds) {
+      try {
+        const member = await MemberService.fetchMemberDataForCompetitorId(id);
+        members.push(member);
+      } catch (error) {
+        console.error(
+          `Error fetching member data for competitor with ID ${id}:`,
+          error
+        );
+      }
+    }
+    return members;
+  };
+  const handleOpenCompetitionEntries = async (competition) => {
+    const results =
+    await ResultMemberService.getAllResultsMemberForCompetitionAsync(
+      competition.id
+    );
+    console.log(results);
+    if(results.length!=0){
+      fetchMemberData(results)
+        .then((resultsWithMemberData) => {
+          setCompetitionResults(resultsWithMemberData);
+        })
+        .catch((error) => {
+          console.error(error);
         });
+      setResultFormOpened(true);
+    }
+    else{
+    const response =
+      await CompetitionEntryService.getAllResultsMemberForCompetitionAsync(
+        competition.id
+      );
+
+    const competitorIds = response.map(
+      (entry) => entry.competitorDefinition.id
+    );
+    const members = await getMembersForCompetitors(competitorIds);
+    if (response.length !== 0) {
+      navigate("/competitionEntries/competition", {
+        state: {
+          competitionEntries: response,
+          members: members,
+          competition: competition,
+        },
+      });
+    } else {
+      navigate("/competitionEntries", {
+        state: { competition: competition },
+      });
+    }
   }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -112,71 +183,39 @@ export default function Competitions() {
         await getAllCities();
         await getAllCompetitions();
       } catch (error) {
-        errorOccurredPopUp('Error while trying to fetch data from database!');
-        console.error('Error fetching data:', error);
+        errorOccurredPopUp("Error while trying to fetch data from database!");
       }
     };
-  
-    fetchData();
-  },[]);
 
+    fetchData();
+  }, []);
 
   useEffect(() => {
-    if (editedCompetition || deletedCompetition || savedCompetition)  {
+    if (editedCompetition || deletedCompetition || savedCompetition) {
       getAllCompetitions();
     }
-  }, [editedCompetition, deletedCompetition,savedCompetition]);
-  
-  const deleteCompetition = async(competition) => {
+  }, [editedCompetition, deletedCompetition, savedCompetition]);
+
+  const deleteCompetition = async (competition) => {
     const shouldDelete = await deleteCompetitionQuestionPopUpAsync();
-    if(shouldDelete){
-      const response = await CompetitionService.deleteCompetitionAsync(competition.id);
-      console.log(response);
-      setCompetitionDeleted(competition);
+    if (shouldDelete) {
+      const response = await CompetitionService.deleteCompetitionAsync(
+        competition.id
+      );
+      if (response.responseData == null) {
+        errorOccurredPopUp("Can't delete this competition!");
+      } else {
+        setCompetitionDeleted(competition);
+        deletedCompetitionSuccessfullyPopUp(competition);
+      }
     }
-    
-  }
+  };
 
-  // const [selectedFile, setSelectedFile] = useState(null);
-
-  // const handleFileChange = (event) => {
-  //   setSelectedFile(event.target.files[0]);
-  // };
-
-  // const handleFormSubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   if (selectedFile) {
-  //     const formData = new FormData();
-  //     formData.append('file', selectedFile);
-
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       const requestOptions = {
-  //         method: "POST",
-  //         headers: {
-  //           Authorization: `${token}`,
-  //         },
-  //         body: formData
-  //       }
-        
-  //     const response = await fetch(FILE_API, requestOptions);
-      
-  //       console.log('File uploaded successfully!');
-  //     } catch (error) {
-  //       console.error('Error uploading file:', error);
-  //     }
-  //   }
-  // };
   return (
-    
     <div className="competition-wrapper">
-      {/* <form onSubmit={handleFormSubmit} enctype="multipart/form-data">
-      <input type="file" onChange={handleFileChange} />
-      <button type="submit">Upload</button>
-    </form> */}
-  
-      <h2 className="competition-title upcoming-title">Upcoming Competitions</h2>
+      <h2 className="competition-title upcoming-title">
+        Upcoming Competitions
+      </h2>
       <table className="table">
         <thead>
           <tr>
@@ -193,19 +232,38 @@ export default function Competitions() {
           {upcomingCompetitions.map((competition, index) => (
             <tr key={index}>
               <td>{index + 1}</td>
-              <td className="competition-name" onClick={() => handleOpenCompetitionEntries(competition)}>
+              <td
+                className="competition-name"
+                onClick={() => handleOpenCompetitionEntries(competition)}
+              >
                 {competition.name}
               </td>
               <td>{competition.date}</td>
               <td>{competition.competitionHall}</td>
               <td>{competition.cityDefinition.name}</td>
-              <td><button onClick={() =>openCompetitionEditForm(competition)} className="button">Edit</button></td>
-              <td><button onClick={() =>deleteCompetition(competition)} className="button">Delete competition</button></td>
+              <td>
+                <button
+                  onClick={() => openCompetitionEditForm(competition)}
+                  className="button"
+                >
+                  Edit
+                </button>
+              </td>
+              <td>
+                <button
+                  onClick={() => deleteCompetition(competition)}
+                  className="button"
+                >
+                  Delete competition
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <button onClick={openCompetitionForm} className='button'>Add competition</button>
+      <button onClick={openCompetitionForm} className="button">
+        Add competition
+      </button>
       <h2 className="competition-title past-title">Past Competitions</h2>
       <table className="table">
         <thead>
@@ -221,7 +279,10 @@ export default function Competitions() {
           {pastCompetitions.map((competition, index) => (
             <tr key={index}>
               <td>{index + 1}</td>
-              <td className="competition-name" onClick={() => handleResultsClick(competition)}>
+              <td
+                className="competition-name"
+                onClick={() => handleResultsClick(competition)}
+              >
                 {competition.name}
               </td>
               <td>{competition.date}</td>
@@ -232,47 +293,46 @@ export default function Competitions() {
         </tbody>
       </table>
 
-    {isCompetitionFormOpened &&
-       <div className="popup-container-competition">
-       <div className="popup-content-competition">
-         <button className="close-button" onClick={closeCompetitionForm}>
-           X
-         </button>
-         <AddCompetitionForm 
-         cities={cities}
-         setSavedCompetition= {setSavedCompetition}
-         />
-       </div>
-     </div>
-      }
-      {isCompetitionEditFormOpened &&
-       <div className="popup-container-competition">
-       <div className="popup-content-competition">
-         <button className="close-button" onClick={closeCompetitionEditForm}>
-           X
-         </button>
-         <EditCompetitionForm 
-         cities={cities}
-         competition = {competitionForEditing}
-         setCompetitionEdited = {setCompetitionEdited}
-         />
-       </div>
-     </div>
-      }
+      {isCompetitionFormOpened && (
+        <div className="popup-container-competition">
+          <div className="popup-content-competition">
+            <button className="close-button" onClick={closeCompetitionForm}>
+              X
+            </button>
+            <AddCompetitionForm
+              cities={cities}
+              setSavedCompetition={setSavedCompetition}
+              setCompetitionFormOpened={setCompetitionFormOpened}
+            />
+          </div>
+        </div>
+      )}
+      {isCompetitionEditFormOpened && (
+        <div className="popup-container-competition">
+          <div className="popup-content-competition">
+            <button className="close-button" onClick={closeCompetitionEditForm}>
+              X
+            </button>
+            <EditCompetitionForm
+              cities={cities}
+              competition={competitionForEditing}
+              setCompetitionEdited={setCompetitionEdited}
+              setCompetitionEditFormOpened={setCompetitionEditFormOpened}
+            />
+          </div>
+        </div>
+      )}
 
-    {isResultFormOpened &&
-          <div className="popup-container-results">
+      {isResultFormOpened && (
+        <div className="popup-container-results">
           <div className="popup-content-results">
             <button className="close-button" onClick={closeResultForm}>
               X
             </button>
-            <ResultsForm 
-              results= {competitionResults}
-              
-            />
+            <ResultsForm results={competitionResults} />
           </div>
         </div>
-      }
-  </div>
-);
+      )}
+    </div>
+  );
 }

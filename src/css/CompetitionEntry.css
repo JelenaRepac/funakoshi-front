@@ -50,19 +50,15 @@
 
   .selection-of-competitors{
     margin: 20px auto;
-    width: 30vh !important;
+    width: 35vh !important;
   }
  
-
-  /* Add this to your CompetitionEntry.css file or create a new CSS file */
-
-/* Styling for the container wrapping the table and selected members section */
 .competitors-container {
   display: grid;
   justify-content: center;
   grid-template-columns: auto auto;
-  column-gap: 50vh;
-  margin-bottom: 20px; /* Optional: Adjust the spacing between the table and the section */
+
+  margin-bottom: 20px; 
 }
 
 .selected-members-list{
@@ -70,4 +66,20 @@
 }
 
 
-  
+.tables-container {
+  margin-top: 7vh;
+  margin-left: 15vh;
+  display: flex;
+  column-gap: 10vh;
+  justify-content: space-between;
+}
+
+.members-table-container,
+.competitors-table-container {
+  display: inline-block;
+  vertical-align: top;
+}
+.table-container {
+  margin: 20px auto;
+  width: 1300px !important;
+}
