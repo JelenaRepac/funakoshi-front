@@ -43,7 +43,13 @@ export function deletedSuccessfullyPopUp(member) {
     title: `You successfully rated with  stars!`,
   });
 }
-
+export function successPopUp(message) {
+  return Swal.fire({
+    ...swalOptions,
+    icon: "success",
+    title: "Search results found!"
+  });
+}
 export function errorOccurredPopUp(text) {
   if (!text) {
     text = "Please try again";
@@ -158,11 +164,11 @@ export async function deleteCompetitionQuestionPopUpAsync() {
  }
  
 export function deletedMemberSuccessfullyPopUp(member) {
-  return swalWithBootstrapButtons.fire(
-    "Deleted!",
-    `${member.firstname} has been deleted.`,
-    "success"
-  );
+  return Swal.fire({
+    ...swalOptions,
+    icon: "success",
+    title: `You successfully deleted `+member.firstname,
+  });
 }
 export function deletedCompetitionSuccessfullyPopUp(competition) {
   return Swal.fire({
@@ -171,7 +177,13 @@ export function deletedCompetitionSuccessfullyPopUp(competition) {
     title: `You successfully deleted `+competition.name,
   });
 }
-
+export function successfullyLoadedCompetition() {
+  return Swal.fire({
+    ...swalOptions,
+    icon: "success",
+    title: `Competition successfully loaded.`,
+  });
+}
 export function addedMemberSuccessfullyPopUp() {
   return Swal.fire({
     ...swalOptions,
@@ -220,5 +232,12 @@ export function updatedMemberSuccessfullyPopUp() {
     ...swalOptions,
     icon: "success",
     title: `You successfully updated member!`,
+  });
+}
+export function updatedCompetitionSuccessfullyPopUp() {
+  return Swal.fire({
+    ...swalOptions,
+    icon: "success",
+    title: `You successfully updated competition!`,
   });
 }

@@ -10,17 +10,18 @@ import {
   logoutQuestionPopUpAsync
 } from "../src/popups/SwalPopUp";
 import MembershipFees from "./components/MembershipFees";
-import Competition from "./components/Competitions";
-import CompetitionEntry from "./components/CompetitionEntry";
+import Competitions from "./components/Competitions";
 import CompetitionEntryByCompetition from "./components/CompetitionEntryByCompetition";
 import UserService from "./services/UserService";
+import CompetitionEntries from "./components/CompetitionEntries";
 function App() {
 
   const[isLoggedIn, setLoggedIn]= useState(false);
-  const [loggedUser, setLoggedUser]=useState();
+  const [loggedUser, setLoggedUser]=useState('');
   const [loggedTrainer, setTrainer] = useState(); 
 
   const handleLogin = async (loggedUser) => {
+    getTrainers();
     setLoggedUser(loggedUser);
     setLoggedIn(true);
   };
@@ -29,20 +30,23 @@ function App() {
     if (shouldLogout) {
       setLoggedIn(false);
       setTrainer();
+      setLoggedUser('');
     }
    
   };
   const getTrainers = async () => {
     try {
       const dbTrainers = await UserService.getTrainersAsync();
-      if (dbTrainers) {
+      if (dbTrainers && Array.isArray(dbTrainers)) { // Check if dbTrainers is an array
         const logged = dbTrainers.find(trainer => trainer.username === loggedUser);
         if (logged) {
           const trainer = logged.firstname + " " + logged.lastname;
           setTrainer(trainer);
+        } else {
+          setTrainer(""); // Set to an empty string if no matching trainer is found
         }
       } else {
-        console.error("No trainers data available.");
+        console.error("Invalid trainers data:", dbTrainers);
       }
     } catch (error) {
       console.error("Error fetching trainers data:", error);
@@ -52,19 +56,16 @@ function App() {
     console.log(loggedUser);
     const fetchData = async () => {
       try {
-        if (isLoggedIn) {
-        getTrainers();
+        if (isLoggedIn && loggedUser) {
+          await getTrainers(); // Wait for the getTrainers function to complete
         }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-    
+  
     fetchData();
-  },[loggedUser]);
- 
-
-
+  }, [isLoggedIn, loggedUser]);
 
   if(isLoggedIn){
     return (
@@ -79,8 +80,8 @@ function App() {
           <Route path="/" element={<Home   loggedUser={loggedUser}/>} />
           <Route path="/trainers" element={<Trainers   />} />
           <Route path="/membershipFees" element={<MembershipFees />} />
-          <Route path="/competitions" element={<Competition />} />
-          <Route path="/competitionEntries" element ={<CompetitionEntry/>} />
+          <Route path="/competitions" element={<Competitions />} />
+          <Route path="/competitionEntries" element ={<CompetitionEntries/>} />
           <Route path="/competitionEntries/competition" element ={<CompetitionEntryByCompetition/>} />
           <Route path="/*" element={<Navigate to="/registration" />} />
         </Routes>

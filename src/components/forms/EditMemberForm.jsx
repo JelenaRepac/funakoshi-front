@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import MemberService from "../../services/MemberService";
-import { updatedMemberSuccessfullyPopUp } from "../../popups/SwalPopUp";
+import { updatedMemberSuccessfullyPopUp ,errorOccurredPopUp} from "../../popups/SwalPopUp";
 
 const EditMemberForm = (props) => {
   const member= props.member;
@@ -25,10 +25,14 @@ const EditMemberForm = (props) => {
     setSelectedCity(city);
   };
   const updateMember = async(member) =>{
+    try{
      await MemberService.updateMemberAsync(member);
     updatedMemberSuccessfullyPopUp();
     props.setMemberEdited(member);
     props.setEditMemberFormOpen(false);
+    }catch(error){
+      errorOccurredPopUp("Cant update member! "+error);
+    }
   }
   const handleSave = () => {
     const updatedMember = {
@@ -45,6 +49,7 @@ const EditMemberForm = (props) => {
       gender: gender,
     };
     updateMember(updatedMember);
+      
   };
 
   return (
@@ -138,6 +143,8 @@ const EditMemberForm = (props) => {
       </label>
       
       <button onClick={handleSave}>Update member</button>
+      <p></p>
+      <button onClick={()=>props.deleteMember(member)}  >Delete member</button>
       </div>
       );
       }

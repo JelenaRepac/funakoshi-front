@@ -9,6 +9,8 @@ import "react-calendar/dist/Calendar.css";
 import {
   deleteMemberQuestionPopUpAsync,
   errorOccurredPopUp,
+  deletedMemberSuccessfullyPopUp,
+  successPopUp
 } from "../popups/SwalPopUp";
 import UserService from "../services/UserService";
 
@@ -38,13 +40,17 @@ export default function Home(loggedUser) {
   };
 
   const openEditMemberForm = (member) => {
+    try{
     setMemberToEdit(member);
     setEditMemberFormOpen(true);
+    }catch(error){
+      errorOccurredPopUp("Cant load information about specific member!");
+    }
   };
 
   const getAllMembers = async () => {
     const dbMembers = await MemberService.getMembersAsync();
-
+    
     if (dbMembers !== null) {
       const filteredMembers = dbMembers.filter((member) => {
         const firstname = member.firstname;
@@ -55,7 +61,15 @@ export default function Home(loggedUser) {
         );
       });
       setMembers(filteredMembers);
+      if (filteredMembers.length > 0) {
+        setTimeout(() => {
+          successPopUp();
+        }, 5000); 
+      } else {
+        errorOccurredPopUp("No search results found.");
+      }
     }
+   
   };
 
   const getAllCities = async () => {
@@ -68,13 +82,17 @@ export default function Home(loggedUser) {
   const deleteMember = async (member) => {
     const shouldDelete = await deleteMemberQuestionPopUpAsync();
     if (shouldDelete) {
+      try{
       const response = await MemberService.deleteMemberAsync(member.id);
       
+      
       setUserDeleted(member);
-      if (response.responseData == null) {
-        errorOccurredPopUp(response.responseMessage);
+      deletedMemberSuccessfullyPopUp(member);
+      }catch(error){
+        errorOccurredPopUp("Error while trying to delete member!");
       }
     }
+    
   };
 
   useEffect(() => {
@@ -113,7 +131,7 @@ export default function Home(loggedUser) {
       <Members
         members={members}
         openEditMemberForm={openEditMemberForm}
-        deleteMember={deleteMember}
+        // deleteMember={deleteMember}
         setSelectedMember={setSelectedMember}
       />
       <button onClick={openMemberForm} className="button-add">
@@ -146,6 +164,7 @@ export default function Home(loggedUser) {
               setMemberEdited={setMemberEdited}
               setEditMemberFormOpen={setEditMemberFormOpen}
               cities={cities}
+              deleteMember={deleteMember}
             />
           </div>
         </div>

@@ -113,14 +113,12 @@ export default function Competitor(props) {
       console.log(responseMember);
       
     }
+    closePopUp();
     
   };
 
   return (
     <div>
-      <button onClick={closePopUp} className="close-button-competitor">
-        X
-      </button>
       <h2>
         {member.firstname} {member.lastname}
       </h2>
@@ -136,13 +134,15 @@ export default function Competitor(props) {
                   name="discipline"
                   value={competitor.discipline}
                   onChange={handleInputChange}
+                  className="form-select"
+                  style={{width:"8vh"}}
                 >
                   <option value="KATE">KATE</option>
                   <option value="BORBE">BORBE</option>
                 </select>
               </td>
             ) : (
-              <td></td>
+              <td>{competitor.discipline}</td>
             )}
           </tr>
           <tr>
@@ -153,6 +153,8 @@ export default function Competitor(props) {
                   name="category"
                   value={competitor.category}
                   onChange={handleInputChange}
+                  className="form-select"
+                  style={{width:"8vh"}}
                 >
                   <option value="POLETARAC">POLETARAC</option>
                   <option value="PIONIR">PIONIR</option>
@@ -164,7 +166,7 @@ export default function Competitor(props) {
                 </select>
               </td>
             ) : (
-              <td></td>
+              <td>{competitor.category}</td>
             )}
           </tr>
           <tr>
@@ -175,6 +177,8 @@ export default function Competitor(props) {
                   name="classCategory"
                   value={competitor.classCategory}
                   onChange={handleInputChange}
+                  className="form-select"
+                  style={{width:"8vh"}}
                 >
                   <option value="E">E</option>
                   <option value="D">D</option>
@@ -185,17 +189,17 @@ export default function Competitor(props) {
                 </select>
               </td>
             ) : (
-              <td></td>
+              <td>{competitor.classCategory}</td>
             )}
           </tr>
         </tbody>
       </table>
 
-      <button className="button-edit" onClick={handleEditClick}>
+      <button className="button" onClick={handleEditClick}>
         Edit
       </button>
       {isEdited && (
-        <button className="button-save" onClick={handleUpdateCompetitor}>
+        <button className="button" onClick={handleUpdateCompetitor}>
           Save
         </button>
       )}

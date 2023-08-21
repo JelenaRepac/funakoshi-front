@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import CompetitionService from "../../services/CompetitionService";
+import { updatedCompetitionSuccessfullyPopUp, errorOccurredPopUp } from '../../popups/SwalPopUp';
 
 export default function EditCompetitionForm(props) {
   const cities = props.cities;
@@ -29,11 +30,16 @@ export default function EditCompetitionForm(props) {
   };
   const updateCompetition = async (updatedCompetition) => {
 
+    try{
     const response = await CompetitionService.updateCompetitionAsync(
         updatedCompetition
     );
     props.setCompetitionEdited(updatedCompetition);
     props.setCompetitionEditFormOpened(false);
+    updatedCompetitionSuccessfullyPopUp();
+    }catch(error){
+      errorOccurredPopUp("Can't update competition informations!");
+    }
   };
 
   return (

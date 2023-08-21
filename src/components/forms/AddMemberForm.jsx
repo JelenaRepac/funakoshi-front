@@ -57,7 +57,7 @@ export default function AddMemberForm(props) {
       !member.belt ||
       !member.gender
     ) {
-      errorOccurredPopUp("Please fill all of the fields!");
+      errorOccurredPopUp("Error while trying to save new member!");
     }
     else{
       await MemberService.saveMemberAsync(member);

@@ -1,5 +1,4 @@
 
-import UserService from "../services/UserService";
 import "../css/Trainers.css";
 import React, {useEffect, useState} from "react";
 import { useLocation } from "react-router-dom";
@@ -7,6 +6,10 @@ import ResultMemberDefinition from "../model/ResultMemberDefinition";
 import ResultMemberService from "../services/ResultMemberService";
 import { errorOccurredPopUp, addedResultSuccessfullyPopUp } from "../popups/SwalPopUp";
 import { useNavigate } from "react-router-dom";
+import { FaArrowLeft } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import CompetitionEntry from "./../css/CompetitionEntry.css";
+
 export default function CompetitionEntryByCompetition(){
     const location = useLocation();
     const competitionEntries = location.state?.competitionEntries;
@@ -52,7 +55,9 @@ export default function CompetitionEntryByCompetition(){
   
     return(
         <div>
-        {competitionEntries && competitionEntries.length > 0 ? (
+          <Link to="/competitions" className="back-link">
+            <FaArrowLeft /> Back to Competitions
+          </Link>
           <div>
           <table className="table-container">
             <thead>
@@ -80,6 +85,7 @@ export default function CompetitionEntryByCompetition(){
                   <td>
                   <select
                   name="medal"
+                  className="form-select"
                   value={medals[member.id] || ""}
                   onChange={(e) => handleMedalChange(member.id, e.target.value)}
                 
@@ -94,11 +100,9 @@ export default function CompetitionEntryByCompetition(){
               ))}
             </tbody>
           </table>
-          <button onClick={handleSaveButton} className="button" style={{marginLeft:"35vh", width:"10vh"}}>Save results</button>
+          <button onClick={handleSaveButton} className="button" style={{marginLeft:"25vh", width:"10vh"}}>Save results</button>
           </div>
-        ) : (
-          <p>No competition entries available.</p>
-        )}
+     
       </div>
     )
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CompetitionService from '../../services/CompetitionService';
-import { addedComeptitionSuccessfullyPopUp } from '../../popups/SwalPopUp';
+import { addedComeptitionSuccessfullyPopUp, errorOccurredPopUp } from '../../popups/SwalPopUp';
 
 export default function AddCompetitionForm(props){
     const cities= props.cities;
@@ -34,10 +34,14 @@ export default function AddCompetitionForm(props){
   
     const handleSave = async (e) => {
         e.preventDefault(); 
+        try{
         await CompetitionService.saveCompetitionAsync(competition);
         props.setSavedCompetition(competition);
         props.setCompetitionFormOpened(false);
         addedComeptitionSuccessfullyPopUp();
+        }catch(error){
+          errorOccurredPopUp("Can't save competition!");
+        }
     };
   
       

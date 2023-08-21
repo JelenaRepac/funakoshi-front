@@ -1,14 +1,13 @@
-
 export default function Members(props) {
  const members = props.members;
 
  const handleMemberClick = (member) => {
     if(props.isFees){
       props.setSelectedMember(member);
-     // props.setMembershipFees(member.membershipFeesDefinition);
     }
     else{
         props.setSelectedMember(member);
+        props.openEditMemberForm(member);
     }
   };
     return (
@@ -26,12 +25,7 @@ export default function Members(props) {
               <th>Adress</th>
               <th>Date of membership</th>
               
-              {!props.isFees &&
-                <>
-                <th></th>
-                <th></th>
-                </>
-              }
+            
               
             </tr>
           </thead>
@@ -53,8 +47,8 @@ export default function Members(props) {
                
                {!props.isFees && 
                <>
-               <td><button onClick={() =>props.openEditMemberForm(member)} className="button"> Edit</button></td>
-               <td><button onClick={()=>props.deleteMember(member)}  className="button">Delete member</button></td>
+               {/* <td><button onClick={() =>props.openEditMemberForm(member)} className="button"> Edit</button></td> */}
+               {/* <td><button onClick={()=>props.deleteMember(member)}  className="button">Delete member</button></td> */}
                </>
                }
                 </tr>

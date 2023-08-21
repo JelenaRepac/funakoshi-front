@@ -1,7 +1,43 @@
+.back-link {
+    display: inline-block;
+    margin-top: 3vh;
+    margin-left: 25vh;
+    color: #007bff; /* Link color */
+    text-decoration: none;
+    font-size: 15px;
+    cursor: pointer;
+  }
 
+  
+  .popup-container-competitor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+  }
+  
+  .popup-content-competitor {
+    width: 40vh;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.603);
+    text-align: center;
+    display: grid;
+    justify-content: center;
+    height: 39vh !important;
+    overflow-y: auto;
+  }
+  
   .popup-content-competitor h2 {
     font-size: 24px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     color: #333;
   }
   
@@ -21,65 +57,22 @@
     border-radius: 4px;
     cursor: pointer;
     justify-self: center;
+    margin: 2vh;
     transition: background-color 0.3s ease;
   }
   
-.popup-container-competitor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+
+  .popup-content-competitor .close-button {
+    position: absolute;
+    top: auto;
+    right:auto;
+    font-size: 20px;
+    color: #aaa;
+    background: none;
+    border: none;
+    cursor: pointer;
   }
   
-  .popup-content-competitor {
-    position: relative; 
-    width: 40vh !important;
-    height: 40vh;
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    overflow-y: auto; 
+  .popup-content-competitor .close-button:hover {
+    color: #333;
   }
-  
-
-  .selection-of-competitors{
-    margin: 20px auto;
-    width: 35vh !important;
-  }
- 
-.competitors-container {
-  display: grid;
-  justify-content: center;
-  grid-template-columns: auto auto;
-
-  margin-bottom: 20px; 
-}
-
-.selected-members-list{
-  width: 20vh;
-}
-
-
-.tables-container {
-  margin-top: 7vh;
-  margin-left: 15vh;
-  display: flex;
-  column-gap: 10vh;
-  justify-content: space-between;
-}
-
-.members-table-container,
-.competitors-table-container {
-  display: inline-block;
-  vertical-align: top;
-}
-.table-container {
-  margin: 20px auto;
-  width: 1300px !important;
-}

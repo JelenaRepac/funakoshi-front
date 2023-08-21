@@ -12,6 +12,7 @@ import {
   deleteCompetitionQuestionPopUpAsync,
   errorOccurredPopUp,
   deletedCompetitionSuccessfullyPopUp,
+  successfullyLoadedCompetition
 } from "../popups/SwalPopUp";
 import CompetitionEntryService from "../services/CompetitionEntryService";
 
@@ -20,14 +21,14 @@ export default function Competitions() {
   const [pastCompetitions, setPastCompetitions] = useState([]);
   const [cities, setCities] = useState([]);
   const [isCompetitionFormOpened, setCompetitionFormOpened] = useState(false);
-  const [isCompetitionEditFormOpened, setCompetitionEditFormOpened] =
-    useState(false);
+  const [isCompetitionEditFormOpened, setCompetitionEditFormOpened] =useState(false);
   const [savedCompetition, setSavedCompetition] = useState();
   const [isResultFormOpened, setResultFormOpened] = useState(false);
   const [competitionResults, setCompetitionResults] = useState([]);
   const [competitionForEditing, setCompetitionForEditing] = useState();
   const [editedCompetition, setCompetitionEdited] = useState();
   const [deletedCompetition, setCompetitionDeleted] = useState();
+
   const navigate = useNavigate();
 
   const handleResultsClick = async (competition) => {
@@ -65,21 +66,6 @@ export default function Competitions() {
     }
     return resultsWithMemberData;
   };
-  const openResultsForm = async (competition) => {
-    const results =
-      await ResultMemberService.getAllResultsMemberForCompetitionAsync(
-        competition.id
-      );
-    console.log(results);
-    fetchMemberData(results)
-      .then((resultsWithMemberData) => {
-        setCompetitionResults(resultsWithMemberData);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-    setResultFormOpened(true);
-  };
   const closeResultForm = () => {
     setResultFormOpened(false);
   };
@@ -87,6 +73,7 @@ export default function Competitions() {
     setCompetitionFormOpened(true);
   };
   const openCompetitionEditForm = (competition) => {
+    errorOccurredPopUp("Can't load competition!");
     setCompetitionForEditing(competition);
     setCompetitionEditFormOpened(true);
   };
@@ -115,7 +102,6 @@ export default function Competitions() {
 
   const getAllCities = async () => {
     const dbCities = await CityService.getAllCitiesAsync();
-    console.log(dbCities);
     if (dbCities !== null) {
       setCities(dbCities);
     }
@@ -136,12 +122,13 @@ export default function Competitions() {
     return members;
   };
   const handleOpenCompetitionEntries = async (competition) => {
+    successfullyLoadedCompetition();
     const results =
-    await ResultMemberService.getAllResultsMemberForCompetitionAsync(
-      competition.id
-    );
+      await ResultMemberService.getAllResultsMemberForCompetitionAsync(
+        competition.id
+      );
     console.log(results);
-    if(results.length!=0){
+    if (results.length != 0) {
       fetchMemberData(results)
         .then((resultsWithMemberData) => {
           setCompetitionResults(resultsWithMemberData);
@@ -150,31 +137,30 @@ export default function Competitions() {
           console.error(error);
         });
       setResultFormOpened(true);
-    }
-    else{
-    const response =
-      await CompetitionEntryService.getAllResultsMemberForCompetitionAsync(
-        competition.id
-      );
-
-    const competitorIds = response.map(
-      (entry) => entry.competitorDefinition.id
-    );
-    const members = await getMembersForCompetitors(competitorIds);
-    if (response.length !== 0) {
-      navigate("/competitionEntries/competition", {
-        state: {
-          competitionEntries: response,
-          members: members,
-          competition: competition,
-        },
-      });
     } else {
-      navigate("/competitionEntries", {
-        state: { competition: competition },
-      });
+      const response =
+        await CompetitionEntryService.getAllResultsMemberForCompetitionAsync(
+          competition.id
+        );
+
+      const competitorIds = response.map(
+        (entry) => entry.competitorDefinition.id
+      );
+      const members = await getMembersForCompetitors(competitorIds);
+      if (response.length !== 0) {
+        navigate("/competitionEntries/competition", {
+          state: {
+            competitionEntries: response,
+            members: members,
+            competition: competition,
+          },
+        });
+      } else {
+        navigate("/competitionEntries", {
+          state: { competition: competition },
+        });
+      }
     }
-  }
   };
 
   useEffect(() => {
@@ -183,7 +169,7 @@ export default function Competitions() {
         await getAllCities();
         await getAllCompetitions();
       } catch (error) {
-        errorOccurredPopUp("Error while trying to fetch data from database!");
+        errorOccurredPopUp("Error while trying to fetch the competitions from database!");
       }
     };
 
@@ -197,23 +183,26 @@ export default function Competitions() {
   }, [editedCompetition, deletedCompetition, savedCompetition]);
 
   const deleteCompetition = async (competition) => {
-    const shouldDelete = await deleteCompetitionQuestionPopUpAsync();
-    if (shouldDelete) {
-      const response = await CompetitionService.deleteCompetitionAsync(
-        competition.id
-      );
-      if (response.responseData == null) {
-        errorOccurredPopUp("Can't delete this competition!");
-      } else {
-        setCompetitionDeleted(competition);
-        deletedCompetitionSuccessfullyPopUp(competition);
-      }
-    }
+    errorOccurredPopUp("Can't delete this competition!");
+    // const shouldDelete = await deleteCompetitionQuestionPopUpAsync();
+    // if (shouldDelete) {
+    //   const response = await CompetitionService.deleteCompetitionAsync(
+    //     competition.id
+    //   );
+    //   if (response.responseData == null) {
+    //     errorOccurredPopUp("Can't delete this competition!");
+    //   } else {
+    //     setCompetitionDeleted(competition);
+    //     deletedCompetitionSuccessfullyPopUp(competition);
+    //   }
+    // }
   };
 
   return (
     <div className="competition-wrapper">
-      <h2 className="competition-title upcoming-title">
+      {upcomingCompetitions.length > 0 && (
+        <div>
+          <h2 className="competition-title upcoming-title">
         Upcoming Competitions
       </h2>
       <table className="table">
@@ -264,6 +253,10 @@ export default function Competitions() {
       <button onClick={openCompetitionForm} className="button">
         Add competition
       </button>
+        </div>
+      )}
+      
+      
       <h2 className="competition-title past-title">Past Competitions</h2>
       <table className="table">
         <thead>
@@ -292,7 +285,11 @@ export default function Competitions() {
           ))}
         </tbody>
       </table>
-
+      {upcomingCompetitions.length === 0 && (
+      <button onClick={openCompetitionForm} className="button">
+        Add competition
+      </button>
+      )}
       {isCompetitionFormOpened && (
         <div className="popup-container-competition">
           <div className="popup-content-competition">
